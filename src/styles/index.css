@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #090b16;
+  color: #f8f6f2;
+}
+
+button,
+canvas {
+  touch-action: manipulation;
+}
+
+.app-surface {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.phase-gradient {
+  transition: background 1.2s ease, filter 1.2s ease;
+  background-size: 180% 180%;
+  animation: gradientDrift 18s ease-in-out infinite;
+}
+
+.phase-amanecer {
+  background:
+    radial-gradient(circle at top, rgba(255, 244, 214, 0.36), transparent 34%),
+    linear-gradient(135deg, #f8d8ab 0%, #f2b082 28%, #c8787e 60%, #4a487c 100%);
+}
+
+.phase-tarde {
+  background:
+    radial-gradient(circle at top, rgba(198, 235, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, #b7e0ff 0%, #76c5de 26%, #4c8cc9 56%, #233f79 100%);
+}
+
+.phase-atardecer {
+  background:
+    radial-gradient(circle at top, rgba(255, 218, 188, 0.3), transparent 34%),
+    linear-gradient(135deg, #f4b57a 0%, #dd7a74 30%, #9e4e88 62%, #2f295f 100%);
+}
+
+.phase-noche {
+  background:
+    radial-gradient(circle at top, rgba(146, 136, 255, 0.2), transparent 34%),
+    linear-gradient(135deg, #1f2548 0%, #161a34 34%, #101325 65%, #070911 100%);
+}
+
+.phase-cierre {
+  background:
+    radial-gradient(circle at top, rgba(247, 224, 255, 0.24), transparent 34%),
+    linear-gradient(135deg, #2e2456 0%, #4e4faf 36%, #8658a7 62%, #0b0d1b 100%);
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(13, 16, 30, 0.2), rgba(9, 11, 22, 0.24));
+  backdrop-filter: blur(22px);
+  border-radius: 1.75rem;
+  box-shadow: 0 24px 80px rgba(8, 10, 20, 0.2);
+}
+
+.primary-button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  border-radius: 9999px;
+  padding: 0.95rem 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.primary-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 4px;
+}
+
+@keyframes gradientDrift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
