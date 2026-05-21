@@ -2,7 +2,7 @@ export const appRoutes = {
   home: {
     id: 'home',
     path: '/',
-    phaseId: 'amanecer',
+    phaseId: 'home',
     label: 'Inicio',
     title: 'Home',
     description: 'Puerta de entrada al recorrido completo.',

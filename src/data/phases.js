@@ -2,7 +2,7 @@ export const introContent = {
   eyebrow: 'Todo está conectado',
   title: 'Hola coquito, espero te guste este pequeño detalle que hice para ti.',
   body: 'Quiero mostrarte cómo te percibo, qué me gusta de ti y las cosas que me haces sentir.',
-  secondaryBody: 'Este es el nuevo home del recorrido: la experiencia que ya teníamos sigue intacta, solo que ahora entra por una puerta más viva.',
+  secondaryBody: '',
   buttonLabel: 'Entrar al micelio',
   caption: 'Pasá por los hongos, seguí la corriente del micelio y cuando quieras abrimos el mapa completo.',
 };

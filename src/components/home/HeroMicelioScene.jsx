@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import HeroMicelioMushroom from './HeroMicelioMushroom';
 import HeroMyceliumNetwork from './HeroMyceliumNetwork';
-import { heroMushrooms, heroMyceliumConnections } from '../../data/homeHero';
+import { heroHomePalette, heroMushrooms, heroMyceliumConnections } from '../../data/homeHero';
 
 export default function HeroMicelioScene({ onNavigate }) {
   const groupRef = useRef();
@@ -13,9 +13,9 @@ export default function HeroMicelioScene({ onNavigate }) {
 
   const backgroundOrbs = useMemo(
     () => [
-      { key: 'left', position: [-4.2, 0.25, -4.8], scale: [2.2, 2.2, 2.2], color: '#7c5338', opacity: 0.1 },
-      { key: 'center', position: [1.25, -1.28, -5.1], scale: [2.5, 2.5, 2.5], color: '#fff1d8', opacity: 0.16 },
-      { key: 'right', position: [4.35, 1.02, -4.4], scale: [3.1, 3.1, 3.1], color: '#9f6f58', opacity: 0.13 },
+      { key: 'left', position: [-4.8, 0.15, -5.1], scale: [2.7, 2.7, 2.7], color: heroHomePalette.moss, opacity: 0.16 },
+      { key: 'center', position: [0.1, -1.48, -5.3], scale: [2.8, 2.8, 2.8], color: heroHomePalette.wine, opacity: 0.11 },
+      { key: 'right', position: [4.85, 0.08, -4.9], scale: [2.8, 2.8, 2.8], color: heroHomePalette.crimson, opacity: 0.16 },
     ],
     [],
   );
@@ -25,14 +25,14 @@ export default function HeroMicelioScene({ onNavigate }) {
       return;
     }
 
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, mouse.x * 0.14, 0.04);
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, mouse.y * 0.06, 0.04);
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.28) * 0.1;
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, mouse.x * 0.03, 0.028);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, mouse.y * 0.018, 0.028);
+    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.22) * 0.04;
   });
 
   return (
     <>
-      <Sparkles count={48} scale={[12, 8, 6]} size={1.65} speed={0.2} color="#fff1d8" opacity={0.38} />
+      <Sparkles count={38} scale={[13, 8, 6]} size={1.35} speed={0.18} color={heroHomePalette.lime} opacity={0.28} />
       {backgroundOrbs.map((orb) => (
         <mesh key={orb.key} position={orb.position} scale={orb.scale}>
           <sphereGeometry args={[1, 26, 26]} />
@@ -40,7 +40,7 @@ export default function HeroMicelioScene({ onNavigate }) {
         </mesh>
       ))}
 
-      <group ref={groupRef} position={[0.3, -0.08, 0]}>
+      <group ref={groupRef} position={[0, -0.18, 0]}>
         <HeroMyceliumNetwork
           connections={heroMyceliumConnections}
           hoveredMushroomId={hoveredMushroomId}

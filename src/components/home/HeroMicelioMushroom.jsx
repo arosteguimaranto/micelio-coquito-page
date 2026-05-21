@@ -345,6 +345,15 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
   const labelRef = useRef();
   const labelOpacityRef = useRef(0);
   const isInteractive = Boolean(mushroom.route);
+  const capScale = mushroom.capScale ?? [1, 1, 1];
+  const stemScale = mushroom.stemScale ?? [1, 1, 1];
+  const gillScale = mushroom.gillScale ?? [1.02, 0.5, 1.02];
+  const ringScale = mushroom.ringScale ?? [1.04, 1.04, 0.42];
+  const stemOffset = mushroom.stemOffset ?? [0, 0, 0];
+  const annulusColor = useMemo(
+    () => shiftColor(mushroom.ringColor ?? mushroom.stemColor, -0.04, -0.03),
+    [mushroom.ringColor, mushroom.stemColor],
+  );
 
   const capSpots = useMemo(() => (mushroom.spots ? buildCapSpots(mushroom.spots) : []), [mushroom.spots]);
   const textures = useMemo(() => buildMushroomTextures(mushroom), [mushroom]);
@@ -404,7 +413,12 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
       0.08,
     );
 
-    labelOpacityRef.current = THREE.MathUtils.damp(labelOpacityRef.current, isHovered || isInteractive ? 1 : 0, 4, delta);
+    labelOpacityRef.current = THREE.MathUtils.damp(
+      labelOpacityRef.current,
+      isHovered ? 1 : isInteractive ? 0.64 : 0,
+      4,
+      delta,
+    );
 
     if (labelRef.current) {
       labelRef.current.style.opacity = labelOpacityRef.current.toFixed(3);
@@ -446,7 +460,7 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
         />
       </mesh>
 
-      <mesh position={[0, 0.82, 0]} geometry={stemGeometry}>
+      <mesh position={[stemOffset[0], 0.82 + stemOffset[1], stemOffset[2]]} scale={stemScale} geometry={stemGeometry}>
         <meshStandardMaterial
           color={mushroom.stemColor}
           map={textures.stemMap}
@@ -458,7 +472,21 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
         />
       </mesh>
 
-      <mesh position={[0, 1.61, 0]} scale={[1.02, 0.5, 1.02]}>
+      <mesh
+        position={[stemOffset[0], 1.08 + stemOffset[1], stemOffset[2]]}
+        rotation={[Math.PI / 2, 0, 0]}
+        scale={ringScale}
+      >
+        <torusGeometry args={[0.26, 0.075, 14, 28]} />
+        <meshStandardMaterial
+          color={annulusColor}
+          roughness={0.94}
+          emissive={mushroom.glowColor}
+          emissiveIntensity={0.04}
+        />
+      </mesh>
+
+      <mesh position={[0, 1.61, 0]} scale={gillScale}>
         <sphereGeometry args={[0.84, 30, 24, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial
           color={mushroom.gillColor}
@@ -472,6 +500,7 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
       <mesh
         geometry={capGeometry}
         position={[0, 1.76, 0]}
+        scale={capScale}
         onClick={handleActivate}
         onPointerOver={(event) => {
           event.stopPropagation();
@@ -501,7 +530,12 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
       </mesh>
 
       {isInteractive ? (
-        <mesh position={[0, 1.75, 0]} rotation={[Math.PI / 2, 0, 0]} onClick={handleActivate}>
+        <mesh
+          position={[0, 1.75, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[Math.max(0.96, capScale[0]), 1, Math.max(0.96, capScale[2])]}
+          onClick={handleActivate}
+        >
           <ringGeometry args={[1.06, 1.18, 42]} />
           <meshBasicMaterial
             color={mushroom.glowColor}
@@ -516,7 +550,11 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
       {capSpots.map((spot) => (
         <mesh
           key={spot.key}
-          position={[spot.position[0], 1.95 + spot.position[1], spot.position[2]]}
+          position={[
+            spot.position[0] * capScale[0],
+            1.95 + spot.position[1] * capScale[1],
+            spot.position[2] * capScale[2],
+          ]}
           scale={[spot.scale, spot.scale, spot.scale]}
         >
           <sphereGeometry args={[1, 12, 12]} />
@@ -529,7 +567,7 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
         </mesh>
       ))}
 
-      <mesh position={[0, 1.6, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh position={[0, 1.6, 0]} rotation={[Math.PI / 2, 0, 0]} scale={gillScale}>
         <circleGeometry args={[0.76, 44]} />
         <meshStandardMaterial map={textures.gillMap} color={mushroom.gillColor} transparent opacity={0.86} side={THREE.DoubleSide} />
       </mesh>
@@ -538,13 +576,13 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
         <div
           ref={labelRef}
           className={[
-            'pointer-events-none rounded-2xl border px-3 py-2 text-center shadow-[0_12px_30px_rgba(96,67,45,0.16)] backdrop-blur-md transition',
-            isInteractive ? 'border-[#6d5544]/20 bg-[#fff6ea]/90 text-[#4d382b]' : 'border-[#6d5544]/12 bg-[#fff6ea]/74 text-[#6b5445]',
+            'pointer-events-none rounded-2xl border px-3 py-2 text-center shadow-[0_12px_30px_rgba(7,16,3,0.22)] backdrop-blur-md transition',
+            isInteractive ? 'border-[#8db600]/22 bg-[#071003]/72 text-[#f4efe4]' : 'border-[#588100]/15 bg-[#071003]/48 text-[#dfe9ca]',
           ].join(' ')}
           style={{ opacity: isInteractive ? 1 : 0 }}
         >
           <strong className="block text-[11px] uppercase tracking-[0.32em]">{mushroom.label}</strong>
-          {isInteractive ? <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-[#8a6a54]">click para entrar</span> : null}
+          {isInteractive ? <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-[#c9d9a8]">click para entrar</span> : null}
         </div>
       </Html>
     </group>

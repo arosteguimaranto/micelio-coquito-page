@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { Line } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { heroHomePalette } from '../../data/homeHero';
 
 function MyceliumPulse({ color, curve, offset, speed }) {
   const pulseRef = useRef();
@@ -20,7 +21,7 @@ function MyceliumPulse({ color, curve, offset, speed }) {
 
   return (
     <mesh ref={pulseRef}>
-      <sphereGeometry args={[0.052, 14, 14]} />
+      <sphereGeometry args={[0.045, 14, 14]} />
       <meshBasicMaterial color={color} toneMapped={false} />
     </mesh>
   );
@@ -51,14 +52,14 @@ function MyceliumConnection({ anchorMap, connection, hoveredMushroomId }) {
   }
 
   const isHovered = hoveredMushroomId && (hoveredMushroomId === connection.from || hoveredMushroomId === connection.to);
-  const baseColor = isHovered ? '#fff4db' : '#f4e2ca';
-  const glowColor = isHovered ? '#fff8ea' : '#ffe7bf';
-  const opacity = isHovered ? 0.92 : 0.48;
+  const baseColor = isHovered ? heroHomePalette.crimson : heroHomePalette.lime;
+  const glowColor = isHovered ? '#d73f58' : heroHomePalette.moss;
+  const opacity = isHovered ? 0.88 : 0.42;
 
   return (
     <group>
-      <Line points={points} color="#8f7560" transparent opacity={0.18} lineWidth={1.2} />
-      <Line points={points} color={baseColor} transparent opacity={opacity} lineWidth={isHovered ? 2.2 : 1.3} />
+      <Line points={points} color={heroHomePalette.forest} transparent opacity={0.24} lineWidth={1.1} />
+      <Line points={points} color={baseColor} transparent opacity={opacity} lineWidth={isHovered ? 1.8 : 1.05} />
       {Array.from({ length: connection.pulseCount ?? 2 }, (_, index) => (
         <MyceliumPulse
           key={`${connection.id}-pulse-${index}`}
@@ -93,11 +94,11 @@ export default function HeroMyceliumNetwork({ connections, hoveredMushroomId, mu
 
         return (
           <mesh key={`${mushroom.id}-node`} position={mushroom.anchor}>
-            <sphereGeometry args={[isHovered ? 0.11 : 0.085, 16, 16]} />
+            <sphereGeometry args={[isHovered ? 0.09 : 0.068, 16, 16]} />
             <meshBasicMaterial
-              color={isHovered ? '#fff7ec' : '#f8e7d3'}
+              color={isHovered ? heroHomePalette.paper : heroHomePalette.lime}
               transparent
-              opacity={isHovered ? 0.95 : 0.65}
+              opacity={isHovered ? 0.92 : 0.62}
               toneMapped={false}
             />
           </mesh>

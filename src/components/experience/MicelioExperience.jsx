@@ -32,7 +32,6 @@ export default function MicelioExperience({
 }) {
   const storySectionRefs = useRef(new Map());
   const currentAccent = phaseAccentColors[currentPhaseId] ?? '#ffffff';
-  const currentAura = phaseAuraColors[currentPhaseId] ?? 'rgba(255,255,255,0.2)';
 
   const registerStepRef = useCallback(
     (stepId) => (element) => {
@@ -146,8 +145,8 @@ export default function MicelioExperience({
             </div>
           </div>
           <p className="text-sm leading-6 text-white/[0.58]">
-            Sí, lo pasé a un layout mucho más de grid: el canvas queda bien anclado, la lectura usa mejor el ancho y la
-            tarjeta ya no flota sola en el vacío como antes.
+            Tenías razón: el fondo estaba cortando demasiado brusco y el rail todavía no respetaba un 2x2 real por fase.
+            Ahora cada bloque del día agrupa sus puntos dentro de esa grilla y el cambio de atmósfera hace crossfade.
           </p>
         </div>
       </header>
@@ -157,11 +156,17 @@ export default function MicelioExperience({
       <div className="grid flex-1 gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(420px,0.92fr)] xl:items-start">
         <div className="xl:sticky xl:top-5">
           <div className="panel relative min-h-[62vh] overflow-hidden p-3 md:min-h-[70vh] xl:min-h-[calc(100vh-8rem)]">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-80 blur-3xl transition duration-[1200ms]"
-              style={{ background: `radial-gradient(circle at 30% 35%, ${currentAura} 0%, transparent 42%)` }}
-            />
+            {phases.map((phase) => (
+              <div
+                key={`canvas-aura-${phase.id}`}
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 blur-3xl transition-opacity duration-[1400ms] ease-out"
+                style={{
+                  background: `radial-gradient(circle at 30% 35%, ${phaseAuraColors[phase.id]} 0%, transparent 42%)`,
+                  opacity: phase.id === currentPhaseId ? 0.8 : 0,
+                }}
+              />
+            ))}
             <div aria-hidden="true" className="pointer-events-none absolute inset-3 rounded-[1.5rem] micelio-canvas-grid" />
 
             <div className="pointer-events-none absolute left-5 top-5 z-10 max-w-sm rounded-2xl border border-white/[0.1] bg-black/[0.18] px-4 py-3 text-xs leading-6 text-white/[0.62] backdrop-blur-md">
@@ -204,7 +209,12 @@ export default function MicelioExperience({
         </div>
 
         <div className="space-y-6">
-          <MicelioStoryRail activeStepId={activeStoryStep.id} registerStepRef={registerStepRef} storySteps={storySteps} />
+          <MicelioStoryRail
+            activeStepId={activeStoryStep.id}
+            registerStepRef={registerStepRef}
+            revealedNodeIdSet={revealedNodeIdSet}
+            storySteps={storySteps}
+          />
 
           <MicelioMapPanel
             canExploreFullMap={isClosureStep}
