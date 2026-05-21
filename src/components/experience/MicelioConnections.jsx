@@ -1,7 +1,15 @@
+import { useMemo } from 'react';
 import { Line } from '@react-three/drei';
 
-export default function MicelioConnections({ connections, currentPhaseId, nodes, selectedNodeId, visitedNodeIds }) {
-  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+export default function MicelioConnections({
+  connections,
+  currentPhaseId,
+  highlightedNodeId,
+  nodes,
+  showFullMap,
+  visibleNodeIdSet,
+}) {
+  const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
 
   return connections.map(([fromId, toId]) => {
     const fromNode = nodeMap.get(fromId);
@@ -11,21 +19,26 @@ export default function MicelioConnections({ connections, currentPhaseId, nodes,
       return null;
     }
 
-    const isActive = fromId === selectedNodeId || toId === selectedNodeId;
-    const isVisited = visitedNodeIds.includes(fromId) && visitedNodeIds.includes(toId);
+    const isRevealed = showFullMap || (visibleNodeIdSet.has(fromId) && visibleNodeIdSet.has(toId));
+
+    if (!isRevealed) {
+      return null;
+    }
+
+    const isActive = fromId === highlightedNodeId || toId === highlightedNodeId;
     const isCurrentPhase = fromNode.phaseId === currentPhaseId || toNode.phaseId === currentPhaseId;
 
-    const color = isActive ? '#ffe7bf' : isVisited ? '#f7cfe4' : isCurrentPhase ? '#c3b2ff' : '#6d7088';
-    const opacity = isActive ? 0.95 : isVisited ? 0.72 : isCurrentPhase ? 0.42 : 0.2;
+    const color = isActive ? '#ffe7bf' : showFullMap ? '#f7cfe4' : isCurrentPhase ? '#c3b2ff' : '#6d7088';
+    const opacity = isActive ? 0.95 : showFullMap ? 0.58 : isCurrentPhase ? 0.42 : 0.22;
 
     return (
       <Line
         key={`${fromId}-${toId}`}
-        points={[fromNode.position, toNode.position]}
         color={color}
-        lineWidth={isActive ? 2.2 : 1.2}
-        transparent
+        lineWidth={isActive ? 2.2 : showFullMap ? 1.5 : 1.2}
         opacity={opacity}
+        points={[fromNode.position, toNode.position]}
+        transparent
       />
     );
   });

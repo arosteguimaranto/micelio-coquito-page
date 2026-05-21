@@ -1,10 +1,10 @@
 export const introContent = {
-  title: 'Esto es una pequeña cartografía de cómo te he ido percibiendo.',
-  body: 'No pretende decir quién sos ni cerrarte en una idea fija. Intenta, más bien, mostrar cómo se conectan entre sí algunas cosas que me hacen pensar en vos.',
-  secondaryBody:
-    'No hice esto para definirte. Lo hice para mostrarte cómo se ve, desde mí, todo lo que se conecta cuando pienso en ti.',
+  eyebrow: 'Todo está conectado',
+  title: 'Hola coquito, espero te guste este pequeño detalle que hice para ti.',
+  body: 'Quiero mostrarte cómo te percibo, qué me gusta de ti y las cosas que me haces sentir.',
+  secondaryBody: 'Este es el nuevo home del recorrido: la experiencia que ya teníamos sigue intacta, solo que ahora entra por una puerta más viva.',
   buttonLabel: 'Entrar al micelio',
-  caption: 'Una experiencia breve, sensible y curiosa. Sin certezas rotundas; apenas una forma de mirar.',
+  caption: 'Pasá por los hongos, seguí la corriente del micelio y cuando quieras abrimos el mapa completo.',
 };
 
 export const phases = [
