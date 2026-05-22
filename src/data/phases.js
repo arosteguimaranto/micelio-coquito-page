@@ -1,5 +1,5 @@
 export const introContent = {
-  eyebrow: 'Todo está conectado',
+  eyebrow: '',
   title: 'Hola coquito, espero te guste este pequeño detalle que hice para ti.',
   body: 'Quiero mostrarte cómo te percibo, qué me gusta de ti y las cosas que me haces sentir.',
   secondaryBody: '',

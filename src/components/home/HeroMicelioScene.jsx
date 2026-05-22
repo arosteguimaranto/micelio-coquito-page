@@ -4,35 +4,48 @@ import { useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import HeroMicelioMushroom from './HeroMicelioMushroom';
 import HeroMyceliumNetwork from './HeroMyceliumNetwork';
-import { heroHomePalette, heroMushrooms, heroMyceliumConnections } from '../../data/homeHero';
+import { heroHomePalette, heroSceneLayouts } from '../../data/homeHero';
 
 export default function HeroMicelioScene({ onNavigate }) {
   const groupRef = useRef();
-  const { mouse } = useThree();
+  const { mouse, size } = useThree();
   const [hoveredMushroomId, setHoveredMushroomId] = useState(null);
-
-  const backgroundOrbs = useMemo(
-    () => [
-      { key: 'left', position: [-4.8, 0.15, -5.1], scale: [2.7, 2.7, 2.7], color: heroHomePalette.moss, opacity: 0.16 },
-      { key: 'center', position: [0.1, -1.48, -5.3], scale: [2.8, 2.8, 2.8], color: heroHomePalette.wine, opacity: 0.11 },
-      { key: 'right', position: [4.85, 0.08, -4.9], scale: [2.8, 2.8, 2.8], color: heroHomePalette.crimson, opacity: 0.16 },
-    ],
-    [],
-  );
+  const isMobile = size.width < 768;
+  const sceneLayout = isMobile ? heroSceneLayouts.mobile : heroSceneLayouts.desktop;
+  const {
+    backgroundOrbs,
+    connections,
+    groupPosition,
+    mushrooms,
+    sparkles,
+  } = sceneLayout;
 
   useFrame((state) => {
     if (!groupRef.current) {
       return;
     }
 
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, mouse.x * 0.03, 0.028);
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, mouse.y * 0.018, 0.028);
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.22) * 0.04;
+    const baseY = groupPosition[1];
+
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, mouse.x * (isMobile ? 0.012 : 0.03), 0.028);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, mouse.y * (isMobile ? 0.008 : 0.018), 0.028);
+    groupRef.current.position.y = THREE.MathUtils.lerp(
+      groupRef.current.position.y,
+      baseY + Math.sin(state.clock.elapsedTime * 0.22) * (isMobile ? 0.022 : 0.04),
+      0.08,
+    );
   });
 
   return (
     <>
-      <Sparkles count={38} scale={[13, 8, 6]} size={1.35} speed={0.18} color={heroHomePalette.lime} opacity={0.28} />
+      <Sparkles
+        count={sparkles.count}
+        scale={sparkles.scale}
+        size={sparkles.size}
+        speed={sparkles.speed}
+        color={heroHomePalette.lime}
+        opacity={sparkles.opacity}
+      />
       {backgroundOrbs.map((orb) => (
         <mesh key={orb.key} position={orb.position} scale={orb.scale}>
           <sphereGeometry args={[1, 26, 26]} />
@@ -40,14 +53,14 @@ export default function HeroMicelioScene({ onNavigate }) {
         </mesh>
       ))}
 
-      <group ref={groupRef} position={[0, -0.18, 0]}>
+      <group ref={groupRef} position={groupPosition}>
         <HeroMyceliumNetwork
-          connections={heroMyceliumConnections}
+          connections={connections}
           hoveredMushroomId={hoveredMushroomId}
-          mushrooms={heroMushrooms}
+          mushrooms={mushrooms}
         />
 
-        {heroMushrooms.map((mushroom) => (
+        {mushrooms.map((mushroom) => (
           <HeroMicelioMushroom
             key={mushroom.id}
             isHovered={hoveredMushroomId === mushroom.id}

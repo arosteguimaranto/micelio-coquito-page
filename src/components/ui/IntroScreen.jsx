@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import HeroMicelioCanvas from '../home/HeroMicelioCanvas';
+import HeroMicelioStage from '../home/HeroMicelioStage';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,16 +25,12 @@ const itemVariants = {
 export default function IntroScreen({ content, onEnter, onNavigate }) {
   return (
     <section className="home-hero-section relative min-h-screen overflow-hidden">
-      <HeroMicelioCanvas onNavigate={onNavigate} />
-      <div className="pointer-events-none absolute inset-0 home-hero-vignette" />
-      <div className="pointer-events-none absolute inset-0 home-hero-noise" />
-
-      <div className="pointer-events-none relative z-10 flex min-h-screen items-center justify-center px-4 py-6 md:px-6 lg:px-8">
+      <div className="home-hero-shell px-4 py-6 md:px-6 lg:px-8">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="home-hero-center"
+          className="home-hero-copy-region"
         >
           <motion.div variants={itemVariants} className="home-hero-copy-shell">
             <p className="home-hero-eyebrow">{content.eyebrow}</p>
@@ -55,6 +51,8 @@ export default function IntroScreen({ content, onEnter, onNavigate }) {
             {content.caption}
           </motion.p>
         </motion.div>
+
+        <HeroMicelioStage onNavigate={onNavigate} />
       </div>
     </section>
   );

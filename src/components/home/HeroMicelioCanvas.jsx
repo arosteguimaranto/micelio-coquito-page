@@ -1,10 +1,38 @@
 import { Canvas } from '@react-three/fiber';
+import { useEffect, useState } from 'react';
 import HeroMicelioScene from './HeroMicelioScene';
 
 export default function HeroMicelioCanvas({ onNavigate }) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false,
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const syncMatch = (event) => setIsMobile(event.matches);
+
+    setIsMobile(mediaQuery.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', syncMatch);
+      return () => mediaQuery.removeEventListener('change', syncMatch);
+    }
+
+    mediaQuery.addListener(syncMatch);
+    return () => mediaQuery.removeListener(syncMatch);
+  }, []);
+
+  const camera = isMobile
+    ? { position: [0, -0.12, 14.8], fov: 43.5 }
+    : { position: [0, -0.05, 12.8], fov: 34.5 };
+
   return (
     <div className="absolute inset-0">
-      <Canvas camera={{ position: [0, -0.05, 12.8], fov: 34.5 }} dpr={[1, 1.5]}>
+      <Canvas key={isMobile ? 'hero-mobile' : 'hero-desktop'} camera={camera} dpr={isMobile ? [1, 1.25] : [1, 1.5]}>
         <color attach="background" args={['#071003']} />
         <fog attach="fog" args={['#081104', 11, 25]} />
         <ambientLight intensity={0.92} color="#dbe8ca" />

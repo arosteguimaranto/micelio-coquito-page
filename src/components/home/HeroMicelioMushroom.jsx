@@ -350,6 +350,8 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
   const gillScale = mushroom.gillScale ?? [1.02, 0.5, 1.02];
   const ringScale = mushroom.ringScale ?? [1.04, 1.04, 0.42];
   const stemOffset = mushroom.stemOffset ?? [0, 0, 0];
+  const interactionScale = mushroom.interactionScale ?? 1;
+  const interactionHint = mushroom.interactionHint ?? 'click para entrar';
   const annulusColor = useMemo(
     () => shiftColor(mushroom.ringColor ?? mushroom.stemColor, -0.04, -0.03),
     [mushroom.ringColor, mushroom.stemColor],
@@ -531,9 +533,30 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
 
       {isInteractive ? (
         <mesh
+          position={[0, 1.76, 0]}
+          scale={[capScale[0] * interactionScale, capScale[1] * interactionScale, capScale[2] * interactionScale]}
+          onClick={handleActivate}
+          onPointerOver={(event) => {
+            event.stopPropagation();
+            onHoverChange(mushroom.id);
+            document.body.style.cursor = 'pointer';
+          }}
+          onPointerOut={(event) => {
+            event.stopPropagation();
+            onHoverChange(null);
+            document.body.style.cursor = 'default';
+          }}
+        >
+          <sphereGeometry args={[1.04, 22, 18, 0, Math.PI * 2, 0, Math.PI / 1.66]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} toneMapped={false} />
+        </mesh>
+      ) : null}
+
+      {isInteractive ? (
+        <mesh
           position={[0, 1.75, 0]}
           rotation={[Math.PI / 2, 0, 0]}
-          scale={[Math.max(0.96, capScale[0]), 1, Math.max(0.96, capScale[2])]}
+          scale={[Math.max(0.96, capScale[0] * interactionScale * 0.92), 1, Math.max(0.96, capScale[2] * interactionScale * 0.92)]}
           onClick={handleActivate}
         >
           <ringGeometry args={[1.06, 1.18, 42]} />
@@ -582,7 +605,7 @@ export default function HeroMicelioMushroom({ isHovered, mushroom, onHoverChange
           style={{ opacity: isInteractive ? 1 : 0 }}
         >
           <strong className="block text-[11px] uppercase tracking-[0.32em]">{mushroom.label}</strong>
-          {isInteractive ? <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-[#c9d9a8]">click para entrar</span> : null}
+          {isInteractive ? <span className="mt-1 block text-[10px] uppercase tracking-[0.22em] text-[#c9d9a8]">{interactionHint}</span> : null}
         </div>
       </Html>
     </group>

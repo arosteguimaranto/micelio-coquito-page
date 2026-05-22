@@ -4,27 +4,24 @@ export default function MicelioMapPanel({
   canExploreFullMap,
   connectionCount,
   currentPhaseId,
+  focusedNode,
+  focusedNodePhaseLabel,
   handleResetExperience,
-  onNodeAction,
+  onInspectNode,
+  phaseProgress,
   phaseSections,
-  revealedNodeIdSet,
-  selectedNode,
-  selectedNodeId,
-  selectedNodePhaseLabel,
-  storyProgress,
   totalNodes,
 }) {
   return (
     <section className="panel space-y-5 p-5" aria-labelledby="micelio-map-panel-title">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-white/50">Clasificación del micelio</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/50">Panel secundario</p>
           <h2 id="micelio-map-panel-title" className="text-2xl font-semibold text-white">
-            Fases, nodos y cierre narrativo
+            Clasificación general del micelio
           </h2>
-          <p className="text-sm leading-7 text-white/70">
-            Ahora sí está ordenado en grid: primero se pinta la historia, después el mapa completo queda disponible para
-            explorarlo sin perder la clasificación por fase.
+          <p className="max-w-3xl text-sm leading-7 text-white/68">
+            Acá quedó lo exploratorio. Sirve para entender qué nodo vive en cada fase y para saltar entre bloques sin mover todo el viewport.
           </p>
         </div>
 
@@ -47,136 +44,115 @@ export default function MicelioMapPanel({
           <dd className="mt-2 text-xl font-semibold text-white">{connectionCount}</dd>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
-          <dt className="text-[11px] uppercase tracking-[0.28em] text-white/[0.45]">Ritmo</dt>
-          <dd className="mt-2 text-sm font-semibold text-white">{storyProgress}</dd>
+          <dt className="text-[11px] uppercase tracking-[0.28em] text-white/[0.45]">Jerarquía</dt>
+          <dd className="mt-2 text-sm font-semibold text-white">{phaseProgress}</dd>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
           <dt className="text-[11px] uppercase tracking-[0.28em] text-white/[0.45]">Estado</dt>
-          <dd className="mt-2 text-sm font-semibold text-white">{canExploreFullMap ? 'mapa completo' : 'revelando nodos'}</dd>
+          <dd className="mt-2 text-sm font-semibold text-white">{canExploreFullMap ? 'mapa completo' : 'fase enfocada'}</dd>
         </div>
       </dl>
 
-      <div className="space-y-3" aria-live="polite">
-        <div className="space-y-1">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-white/[0.55]">Detalle seleccionado</h3>
-          <p className="text-sm leading-6 text-white/60">
-            {canExploreFullMap
-              ? 'Elegí un nodo del mapa final para volver a leer su percepción con la red completa enfrente.'
-              : 'Mientras no llegues al cierre, tocar un nodo revelado te lleva directo a su estación dentro del scroll.'}
-          </p>
-        </div>
-
-        <article className="rounded-3xl border border-white/10 bg-black/[0.14] p-4 md:p-5">
-          {selectedNode ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-xs uppercase tracking-[0.35em] text-white/45">{selectedNodePhaseLabel}</p>
-                <h4 className="text-2xl font-semibold text-white">{selectedNode.label}</h4>
-              </div>
-              <p className="text-sm leading-7 text-white/[0.8]">{selectedNode.excerpt}</p>
-              <blockquote className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm italic leading-7 text-white/[0.72]">
-                “{selectedNode.quote}”
-              </blockquote>
-              <p className="text-sm leading-7 text-white/[0.62]">{selectedNode.note}</p>
-            </div>
-          ) : (
-            <div className="space-y-3 text-sm leading-7 text-white/[0.65]">
-              <p>
-                {canExploreFullMap
-                  ? 'Todavía no hay un nodo libre seleccionado. Tocá cualquiera de los chips o del mapa para enfocarlo.'
-                  : 'Todavía estamos pintando el recorrido. Si tocás un nodo ya revelado, te llevo a su estación para que no te pierdas.'}
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)] xl:items-start">
+        <article className="rounded-3xl border border-white/10 bg-black/[0.14] p-4 md:p-5" aria-live="polite">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.35em] text-white/45">Foco actual</p>
+            {focusedNode ? (
+              <>
+                <h3 className="text-2xl font-semibold text-white">{focusedNode.label}</h3>
+                <p className="text-xs uppercase tracking-[0.28em] text-white/45">{focusedNodePhaseLabel}</p>
+                <p className="pt-2 text-sm leading-7 text-white/[0.8]">{focusedNode.excerpt}</p>
+                <blockquote className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm italic leading-7 text-white/[0.72]">
+                  “{focusedNode.quote}”
+                </blockquote>
+                <p className="text-sm leading-7 text-white/[0.62]">{focusedNode.note}</p>
+              </>
+            ) : (
+              <p className="text-sm leading-7 text-white/[0.64]">
+                En cierre podés dejar el foco vacío para mirar la red completa sin quedarte con un nodo solo.
               </p>
-              <p className="text-white/[0.48]">
-                Fase activa ahora mismo: {phaseSections.find((phase) => phase.id === currentPhaseId)?.label ?? 'Micelio'}
-              </p>
-            </div>
-          )}
+            )}
+          </div>
         </article>
-      </div>
 
-      <div className="space-y-3" aria-labelledby="micelio-node-navigation-title">
-        <div className="space-y-1">
-          <h3
-            id="micelio-node-navigation-title"
-            className="text-sm font-semibold uppercase tracking-[0.28em] text-white/[0.55]"
-          >
-            Qué nodo pertenece a cada fase
-          </h3>
-          <p className="text-sm leading-6 text-white/60">
-            La fase “cierre” no agrega nodos nuevos: junta todos los anteriores y prende la red completa. Antes de eso,
-            cada chip revelado también sirve para saltar al bloque correcto del relato.
-          </p>
-        </div>
+        <div className="space-y-4" aria-labelledby="micelio-node-navigation-title">
+          <div className="space-y-1">
+            <h3
+              id="micelio-node-navigation-title"
+              className="text-sm font-semibold uppercase tracking-[0.28em] text-white/[0.55]"
+            >
+              Qué nodo pertenece a cada fase
+            </h3>
+            <p className="text-sm leading-6 text-white/60">
+              Los chips de abajo ya no dependen del scroll. Si tocás uno, cambio la fase correspondiente y enfoco ese nodo directo.
+            </p>
+          </div>
 
-        <div className="space-y-4">
-          {phaseSections.map((phase) => {
-            const accent = phaseAccentColors[phase.id] ?? '#ffffff';
-            const isActive = phase.id === currentPhaseId;
-            const isClosure = phase.id === 'cierre';
+          <div className="space-y-4">
+            {phaseSections.map((phase) => {
+              const accent = phaseAccentColors[phase.id] ?? '#ffffff';
+              const isActive = phase.id === currentPhaseId;
+              const isClosure = phase.id === 'cierre';
 
-            return (
-              <section
-                key={phase.id}
-                className={[
-                  'space-y-3 rounded-3xl border p-4 transition md:p-5',
-                  isActive ? 'bg-white/[0.1] text-white' : 'bg-black/[0.12] text-white/76',
-                ].join(' ')}
-                style={{ borderColor: isActive ? `${accent}88` : 'rgba(255,255,255,0.08)' }}
-                aria-labelledby={`phase-section-${phase.id}`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h4 id={`phase-section-${phase.id}`} className="text-sm font-semibold text-white">
-                      {phase.label}
-                    </h4>
-                    <p className="text-xs text-white/50">
-                      {isClosure ? 'Acá se abre la red completa.' : `${phase.revealedNodes}/${phase.totalNodes} nodos ya pintados`}
-                    </p>
+              return (
+                <section
+                  key={phase.id}
+                  className={[
+                    'space-y-3 rounded-3xl border p-4 transition md:p-5',
+                    isActive ? 'bg-white/[0.1] text-white' : 'bg-black/[0.12] text-white/76',
+                  ].join(' ')}
+                  style={{ borderColor: isActive ? `${accent}88` : 'rgba(255,255,255,0.08)' }}
+                  aria-labelledby={`phase-section-${phase.id}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h4 id={`phase-section-${phase.id}`} className="text-sm font-semibold text-white">
+                        {phase.label}
+                      </h4>
+                      <p className="text-xs text-white/50">
+                        {isClosure ? 'Esta pestaña muestra la red completa.' : `${phase.revealedNodes}/${phase.totalNodes} nodos activos ahora`}
+                      </p>
+                    </div>
+                    <span className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">{isActive ? 'activa' : 'fase'}</span>
                   </div>
-                  <span className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">{isActive ? 'activa' : 'fase'}</span>
-                </div>
 
-                {isClosure ? (
-                  <p className="text-sm leading-6 text-white/62">
-                    El cierre junta todos los puntos anteriores, sube la intensidad de las conexiones y te deja ver el mapa
-                    completo de una sola vez.
-                  </p>
-                ) : (
-                  <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                    {phase.nodes.map((node) => {
-                      const isSelected = selectedNodeId === node.id;
-                      const isRevealed = revealedNodeIdSet.has(node.id);
+                  {isClosure ? (
+                    <p className="text-sm leading-6 text-white/62">
+                      El cierre ya no funciona como final del scroll: es una pestaña más, dedicada a comparar todos los nodos con el mapa completo iluminado.
+                    </p>
+                  ) : (
+                    <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                      {phase.nodes.map((node) => {
+                        const isFocused = focusedNode?.id === node.id;
 
-                      return (
-                        <li key={node.id}>
-                          <button
-                            type="button"
-                            onClick={() => onNodeAction(node.id)}
-                            disabled={!isRevealed}
-                            className={[
-                              'flex h-full w-full items-center justify-between rounded-2xl border px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70',
-                              isSelected
-                                ? 'border-white/[0.4] bg-white/[0.2] text-white'
-                                : isRevealed
-                                  ? 'text-white/82 hover:bg-white/[0.12]'
-                                  : 'cursor-not-allowed text-white/42',
-                            ].join(' ')}
-                            style={{
-                              backgroundColor: isSelected ? `${accent}28` : isRevealed ? `${accent}14` : 'rgba(255,255,255,0.04)',
-                              borderColor: isSelected || isRevealed ? `${accent}66` : 'rgba(255,255,255,0.08)',
-                            }}
-                          >
-                            <span>{node.label}</span>
-                            <span className="text-[10px] tracking-[0.24em] text-white/40">{isRevealed ? 'ver' : 'espera'}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </section>
-            );
-          })}
+                        return (
+                          <li key={node.id}>
+                            <button
+                              type="button"
+                              onClick={() => onInspectNode(node.id)}
+                              className={[
+                                'flex h-full w-full items-center justify-between rounded-2xl border px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70',
+                                isFocused
+                                  ? 'border-white/[0.4] bg-white/[0.2] text-white'
+                                  : 'text-white/82 hover:bg-white/[0.12]',
+                              ].join(' ')}
+                              style={{
+                                backgroundColor: isFocused ? `${accent}28` : `${accent}14`,
+                                borderColor: isFocused ? `${accent}66` : 'rgba(255,255,255,0.08)',
+                              }}
+                            >
+                              <span>{node.label}</span>
+                              <span className="text-[10px] tracking-[0.24em] text-white/40">ir</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </section>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
